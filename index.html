@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Incora Parts Availability Portal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg: #020617;
+      --bg-elevated: rgba(15, 23, 42, 0.9);
+      --bg-elevated-softer: rgba(15, 23, 42, 0.8);
+      --border-subtle: rgba(148, 163, 184, 0.3);
+      --accent: #38bdf8;
+      --accent-soft: rgba(56, 189, 248, 0.2);
+      --accent-strong: #0ea5e9;
+      --danger: #f97373;
+      --text-main: #e5e7eb;
+      --text-subtle: #94a3b8;
+      --text-muted: #64748b;
+      --card-radius: 18px;
+      --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.9);
+      --transition-fast: 150ms ease-out;
+      --transition-med: 220ms ease-out;
+      --glow-soft: 0 0 25px rgba(56, 189, 248, 0.35);
+      --row-alt: rgba(31, 41, 55, 0.8);
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #0f172a 0, #020617 40%, #000 100%);
+      color: var(--text-main);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      display: flex;
+      align-items: stretch;
+      justify-content: stretch;
+      overflow: hidden;
+    }
+
+    /* Futuristic background grid */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      opacity: 0.35;
+      background-image:
+        linear-gradient(rgba(15, 23, 42, 0.9) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(15, 23, 42, 0.9) 1px, transparent 1px);
+      background-size: 70px 70px;
+      mask-image: radial-gradient(circle at center, black 0, transparent 70%);
+      pointer-events: none;
+      z-index: -2;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at top right, rgba(56, 189, 248, 0.16), transparent 55%),
+                  radial-gradient(circle at bottom left, rgba(59, 130, 246, 0.16), transparent 55%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* LOGIN OVERLAY ------------------------------------------------------ */
+    #loginOverlay {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: radial-gradient(circle at center, rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.96));
+      backdrop-filter: blur(26px);
+      z-index: 50;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 460px;
+      border-radius: 24px;
+      padding: 32px 30px 26px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      background:
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.35), transparent 65%),
+        radial-gradient(circle at bottom right, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.96));
+      box-shadow: var(--shadow-soft), 0 0 0 1px rgba(15, 23, 42, 0.85);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .login-card::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: inherit;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .login-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .login-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 20%, #f9fafb, #e5e7eb);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.45), var(--glow-soft);
+      overflow: hidden;
+    }
+
+    .login-logo img {
+      width: 30px;
+      height: auto;
+      object-fit: contain;
+    }
+
+    .login-title-block {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .login-title {
+      font-size: 1.05rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-subtle);
+    }
+
+    .login-subtitle {
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .login-badge-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 18px;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--text-muted);
+    }
+
+    .badge-chip {
+      border-radius: 999px;
+      padding: 4px 10px;
+      border: 1px solid rgba(148, 163, 184, 0.55);
+      background: linear-gradient(90deg, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.6));
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.18);
+      position: relative;
+    }
+
+    .pulse-dot::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      border: 1px solid rgba(34, 197, 94, 0.8);
+      animation: ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+    }
+
+    @keyframes ping {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(2.1);
+        opacity: 0;
+      }
+    }
+
+    .login-form-row {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .field-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--text-muted);
+    }
+
+    .field-shell {
+      position: relative;
+      margin-top: 4px;
+    }
+
+    .field-shell::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: 11px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      opacity: 0.8;
+      pointer-events: none;
+    }
+
+    .field-shell::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 10px;
+      opacity: 0.0;
+      background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.25), transparent 65%);
+      transition: opacity var(--transition-med);
+      pointer-events: none;
+    }
+
+    .login-input {
+      width: 100%;
+      padding: 11px 12px 10px 12px;
+      border-radius: 10px;
+      border: none;
+      background: rgba(15, 23, 42, 0.95);
+      color: var(--text-main);
+      font-size: 0.88rem;
+      outline: none;
+    }
+
+    .login-input::placeholder {
+      color: var(--text-muted);
+      opacity: 0.8;
+    }
+
+    .login-input:focus + .input-focus-ring {
+      opacity: 1;
+    }
+
+    .field-shell:focus-within::after {
+      opacity: 1;
+    }
+
+    .input-focus-ring {
+      position: absolute;
+      inset: -1px;
+      border-radius: 11px;
+      border: 1px solid var(--accent-strong);
+      box-shadow: var(--glow-soft);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--transition-med);
+    }
+
+    .login-footer-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 6px;
+      margin-bottom: 12px;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .login-hint {
+      opacity: 0.8;
+    }
+
+    .login-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .primary-button {
+      border-radius: 999px;
+      padding: 8px 18px;
+      border: none;
+      font-size: 0.82rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: #0b1120;
+      background: radial-gradient(circle at top left, #f9fafb, #e5e7eb);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 16px 30px rgba(15, 23, 42, 0.85);
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast),
+        background var(--transition-fast);
+    }
+
+    .primary-button span.icon {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: var(--accent-strong);
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.9);
+    }
+
+    .primary-button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.95);
+      background: radial-gradient(circle at top left, #ffffff, #e5e7eb);
+    }
+
+    .primary-button:active {
+      transform: translateY(0);
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.9);
+    }
+
+    .login-error {
+      min-height: 18px;
+      font-size: 0.78rem;
+      color: #fca5a5;
+      margin-top: 4px;
+    }
+
+    .login-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 8px;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      opacity: 0.78;
+    }
+
+    .login-meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .tiny-pill {
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: rgba(15, 23, 42, 0.85);
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    /* APP SHELL ----------------------------------------------------------- */
+    #appRoot {
+      flex: 1;
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 260ms ease-out;
+    }
+
+    #appRoot.app-visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .app-shell {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .app-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 26px 10px;
+      border-bottom: 1px solid rgba(30, 64, 175, 0.8);
+      background: linear-gradient(90deg, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.9));
+      box-shadow: 0 8px 30px rgba(15, 23, 42, 0.9);
+      position: relative;
+      z-index: 10;
+    }
+
+    .app-header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-mark {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 20%, #f9fafb, #e5e7eb);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.45);
+    }
+
+    .brand-mark img {
+      width: 30px;
+      height: auto;
+      object-fit: contain;
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .brand-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.24em;
+      color: var(--text-muted);
+    }
+
+    .brand-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #e5f2ff;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 0.8rem;
+      color: var(--text-subtle);
+    }
+
+    .user-pill {
+      border-radius: 999px;
+      padding: 6px 12px;
+      border: 1px solid rgba(148, 163, 184, 0.55);
+      background: rgba(15, 23, 42, 0.85);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .user-pill-label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    #userLabel {
+      font-size: 0.82rem;
+      color: var(--text-main);
+    }
+
+    #logoutBtn {
+      border-radius: 999px;
+      padding: 6px 12px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: transparent;
+      color: var(--text-subtle);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background var(--transition-fast), color var(--transition-fast),
+        border-color var(--transition-fast), transform var(--transition-fast);
+    }
+
+    #logoutBtn:hover {
+      background: rgba(15, 23, 42, 0.9);
+      color: #fecaca;
+      border-color: rgba(248, 113, 113, 0.8);
+      transform: translateY(-0.5px);
+    }
+
+    #logoutBtn span.icon {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      border-left-color: rgba(248, 113, 113, 0.9);
+    }
+
+    .app-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 20px 26px 22px;
+      gap: 14px;
+    }
+
+    /* STATUS & SUMMARY BAR ----------------------------------------------- */
+    .status-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 0.78rem;
+      color: var(--text-subtle);
+    }
+
+    .status-left {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: radial-gradient(circle at center, #4b5563, #020617);
+      box-shadow: 0 0 12px rgba(15, 23, 42, 0.8);
+      position: relative;
+    }
+
+    .status-dot.ok {
+      background: radial-gradient(circle at center, #22c55e, #16a34a);
+      box-shadow: 0 0 18px rgba(34, 197, 94, 0.8);
+    }
+
+    .status-dot.error {
+      background: radial-gradient(circle at center, #f97373, #ef4444);
+      box-shadow: 0 0 18px rgba(239, 68, 68, 0.9);
+    }
+
+    #statusText {
+      color: var(--text-subtle);
+    }
+
+    .summary-text {
+      text-align: right;
+      color: var(--text-subtle);
+    }
+
+    #summaryText strong {
+      color: var(--accent-strong);
+    }
+
+    /* SEARCH PANEL -------------------------------------------------------- */
+    .panel-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    @media (max-width: 960px) {
+      .panel-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .search-card {
+      border-radius: var(--card-radius);
+      padding: 18px 18px 16px;
+      background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.22), transparent 65%),
+                  radial-gradient(circle at bottom right, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.96));
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      box-shadow: var(--shadow-soft);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .search-card::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: inherit;
+      border: 1px dashed rgba(148, 163, 184, 0.35);
+      opacity: 0.35;
+      pointer-events: none;
+    }
+
+    .search-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .search-header-title {
+      font-size: 0.82rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-subtle);
+    }
+
+    .search-header-subtitle {
+      font-size: 1.05rem;
+      color: var(--text-main);
+      font-weight: 500;
+      margin-top: 2px;
+    }
+
+    .search-hint {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      text-align: right;
+    }
+
+    .textarea-shell {
+      position: relative;
+      margin-top: 8px;
+    }
+
+    .textarea-shell::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: 14px;
+      border: 1px solid rgba(148, 163, 184, 0.65);
+      pointer-events: none;
+    }
+
+    #partInput {
+      width: 100%;
+      min-height: 110px;
+      max-height: 220px;
+      resize: vertical;
+      border-radius: 14px;
+      border: none;
+      padding: 9px 11px 9px 11px;
+      background: rgba(15, 23, 42, 0.97);
+      color: var(--text-main);
+      font-size: 0.86rem;
+      line-height: 1.45;
+      outline: none;
+    }
+
+    #partInput::placeholder {
+      color: var(--text-muted);
+    }
+
+    .search-actions-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 10px;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .search-buttons {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #searchBtn,
+    #clearBtn {
+      border-radius: 999px;
+      padding: 7px 16px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-main);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background var(--transition-fast), color var(--transition-fast),
+        border-color var(--transition-fast), transform var(--transition-fast);
+    }
+
+    #searchBtn {
+      border-color: rgba(56, 189, 248, 0.85);
+      background: linear-gradient(90deg, rgba(56, 189, 248, 0.2), rgba(59, 130, 246, 0.18));
+      color: #e0f2fe;
+      box-shadow: var(--glow-soft);
+    }
+
+    #searchBtn:hover {
+      transform: translateY(-0.5px);
+      background: linear-gradient(90deg, rgba(56, 189, 248, 0.35), rgba(59, 130, 246, 0.3));
+    }
+
+    #clearBtn:hover {
+      background: rgba(15, 23, 42, 0.95);
+      border-color: rgba(148, 163, 184, 0.9);
+      transform: translateY(-0.5px);
+    }
+
+    .search-usage-hints {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      margin-top: 8px;
+    }
+
+    .search-usage-hints span {
+      opacity: 0.9;
+    }
+
+    /* RESULTS CARD -------------------------------------------------------- */
+    .results-card {
+      border-radius: var(--card-radius);
+      padding: 16px 16px 14px;
+      background: radial-gradient(circle at top right, rgba(37, 99, 235, 0.24), transparent 65%),
+                  linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.98));
+      border: 1px solid rgba(30, 64, 175, 0.85);
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      flex-direction: column;
+      min-height: 170px;
+    }
+
+    .results-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .results-title {
+      font-size: 0.82rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-subtle);
+    }
+
+    .results-subtitle {
+      font-size: 0.84rem;
+      color: var(--text-muted);
+    }
+
+    .results-table-wrapper {
+      margin-top: 8px;
+      border-radius: 14px;
+      border: 1px solid rgba(148, 163, 184, 0.55);
+      overflow: hidden;
+      background: rgba(15, 23, 42, 0.96);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #resultsTable {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+    }
+
+    #resultsTable thead {
+      background: linear-gradient(90deg, rgba(30, 64, 175, 0.9), rgba(37, 99, 235, 0.85));
+    }
+
+    #resultsTable th {
+      padding: 7px 8px;
+      text-align: left;
+      font-weight: 500;
+      color: #e5f2ff;
+      border-bottom: 1px solid rgba(30, 64, 175, 0.9);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 0.72rem;
+      white-space: nowrap;
+    }
+
+    #resultsTable tbody tr {
+      transition: background var(--transition-fast);
+    }
+
+    #resultsTable tbody tr:nth-child(even) {
+      background: var(--row-alt);
+    }
+
+    #resultsTable td {
+      padding: 7px 8px;
+      border-bottom: 1px solid rgba(31, 41, 55, 0.9);
+      color: var(--text-main);
+      white-space: nowrap;
+    }
+
+    #resultsTable tbody tr:hover {
+      background: rgba(30, 64, 175, 0.45);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      border: 1px solid rgba(148, 163, 184, 0.65);
+      color: rgba(248, 250, 252, 0.9);
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .badge.badge-missing {
+      border-color: rgba(248, 113, 113, 0.9);
+      color: #fecaca;
+      background: rgba(127, 29, 29, 0.75);
+    }
+
+    .results-footer {
+      padding: 7px 9px;
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      border-top: 1px solid rgba(31, 41, 55, 0.9);
+      background: rgba(15, 23, 42, 0.98);
+    }
+
+    #noResults {
+      margin-top: 10px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Scrollbars ---------------------------------------------------------- */
+    ::-webkit-scrollbar {
+      width: 9px;
+      height: 9px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.9);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(51, 65, 85, 0.9);
+      border-radius: 999px;
+      border: 2px solid rgba(15, 23, 42, 0.9);
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(71, 85, 105, 0.98);
+    }
+  </style>
+</head>
+<body>
+
+<div id="loginOverlay">
+  <div class="login-card">
+    <div class="login-header">
+      <div class="login-logo">
+        <img src="incora-logo.png" alt="Incora logo" />
+      </div>
+      <div class="login-title-block">
+        <div class="login-title">Incora MRO</div>
+        <div class="login-subtitle">Parts Availability Console</div>
+      </div>
+    </div>
+
+    <div class="login-badge-row">
+      <div class="badge-chip">
+        <div class="pulse-dot"></div>
+        LIVE PORTAL
+      </div>
+      <div class="badge-chip">
+        ACCESS LEVEL · CUSTOMER
+      </div>
+    </div>
+
+    <div class="login-form-row">
+      <div>
+        <div class="field-label">User ID</div>
+        <div class="field-shell">
+          <input id="usernameInput" class="login-input" type="text" autocomplete="username"
+                 placeholder="e.g. user001" />
+          <div class="input-focus-ring"></div>
+        </div>
+      </div>
+      <div>
+        <div class="field-label">Password</div>
+        <div class="field-shell">
+          <input id="passwordInput" class="login-input" type="password" autocomplete="current-password"
+                 placeholder="Enter your secure access code" />
+          <div class="input-focus-ring"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="login-footer-row">
+      <div class="login-hint">
+        Use the credentials provided by Incora to access real-time stock.
+      </div>
+      <div class="login-actions">
+        <button id="loginBtn" class="primary-button" type="button">
+          <span class="icon"></span>
+          <span>Enter Console</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="loginError" class="login-error"></div>
+
+    <div class="login-meta">
+      <span>
+        <span class="tiny-pill">Secure</span>
+        Auth via Google Apps Script
+      </span>
+      <span>
+        <span class="tiny-pill">v1</span>
+        Incora Internal Use
+      </span>
+    </div>
+  </div>
+</div>
+
+<div id="appRoot">
+  <div class="app-shell">
+    <header class="app-header">
+      <div class="app-header-left">
+        <div class="brand-mark">
+          <img src="incora-logo.png" alt="Incora logo" />
+        </div>
+        <div class="brand-text">
+          <div class="brand-label">Incora · Asia MRO</div>
+          <div class="brand-title">Parts Availability Console</div>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="user-pill">
+          <span class="user-pill-label">Current User</span>
+          <span id="userLabel">–</span>
+        </div>
+        <button id="logoutBtn" type="button">
+          <span class="icon"></span>
+          Logout
+        </button>
+      </div>
+    </header>
+
+    <main class="app-main">
+      <div class="status-row">
+        <div class="status-left">
+          <div id="statusDot" class="status-dot"></div>
+          <span id="statusText">Initialising dataset…</span>
+        </div>
+        <div class="summary-text" id="summaryText">
+        </div>
+      </div>
+
+      <div class="panel-grid">
+        <section class="search-card">
+          <div class="search-header-row">
+            <div>
+              <div class="search-header-title">Search</div>
+              <div class="search-header-subtitle">
+                Check stock by part number
+              </div>
+            </div>
+            <div class="search-hint">
+              Paste one or many part numbers.<br />
+              Press Enter or click Search.
+            </div>
+          </div>
+
+          <div class="textarea-shell">
+            <textarea id="partInput" placeholder="Example:
+MS20426-4-5
+AS3209-012
+BACB30NM3-8"></textarea>
+          </div>
+
+          <div class="search-actions-row">
+            <div class="search-buttons">
+              <button id="searchBtn" type="button">
+                <span>Search</span>
+              </button>
+              <button id="clearBtn" type="button">
+                <span>Clear</span>
+              </button>
+            </div>
+            <div class="search-hint">
+              Supports line break, comma or space separated entries.
+            </div>
+          </div>
+
+          <div class="search-usage-hints">
+            <span>• Quantity & price return from Incora's processed dataset.</span>
+            <span>• Certificate type (CoC / CoC + FAA8130) shown where available.</span>
+          </div>
+        </section>
+
+        <section class="results-card">
+          <div class="results-card-header">
+            <div>
+              <div class="results-title">Results</div>
+              <div class="results-subtitle">
+                Live view from latest uploaded parts_data.csv
+              </div>
+            </div>
+          </div>
+
+          <div class="results-table-wrapper">
+            <table id="resultsTable" style="display: none;">
+              <thead>
+              <tr>
+                <th>Part Number</th>
+                <th>Qty Available</th>
+                <th>Sell Price</th>
+                <th>Cert</th>
+              </tr>
+              </thead>
+              <tbody id="resultsBody"></tbody>
+            </table>
+            <div class="results-footer" id="noResults">
+              No results yet. Enter part numbers on the left and click Search.
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+  const AUTH_ENDPOINT = "https://script.google.com/macros/s/AKfycbyVfU0GpnO-ZOOvX4T0rvE2meP8q1PpuJSktGNvnI53J9hYNyfRplraf4cNd3MRXHxJ/exec";
+  const LOG_ENDPOINT =
+    "https://script.google.com/macros/s/AKfycbwfjf0KZ5WB95XLdEd9Wl2RGjf_kiVMTNli23kBOYfNv1pNacnm_jBHE8DuarAvmUklkQ/exec";
+
+  let currentUser = null;
+
+  const loginOverlay = document.getElementById("loginOverlay");
+  const appRoot = document.getElementById("appRoot");
+  const loginBtn = document.getElementById("loginBtn");
+  const usernameInput = document.getElementById("usernameInput");
+  const passwordInput = document.getElementById("passwordInput");
+  const loginError = document.getElementById("loginError");
+  const userLabel = document.getElementById("userLabel");
+  const logoutBtn = document.getElementById("logoutBtn");
+
+  function showApp(username) {
+    currentUser = username;
+    userLabel.textContent = "Logged in as: " + username;
+    loginOverlay.style.display = "none";
+    appRoot.style.display = "block";
+  }
+
+  function showLogin() {
+    appRoot.style.display = "none";
+    loginOverlay.style.display = "flex";
+    usernameInput.value = "";
+    passwordInput.value = "";
+    loginError.textContent = "";
+  }
+
+  async function attemptLogin() {
+    const u = usernameInput.value.trim();
+    const p = passwordInput.value.trim();
+
+    if (!u || !p) {
+      loginError.textContent = "Username and password are required.";
+      return;
+    }
+
+    loginError.textContent = "Checking...";
+
+    try {
+      const body = new URLSearchParams({ username: u, password: p }).toString();
+
+      const response = await fetch(AUTH_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        try { localStorage.setItem("incora_current_user", u); } catch (e) {}
+        showApp(u);
+      } else {
+        loginError.textContent = "Invalid username or password.";
+      }
+    } catch (err) {
+      loginError.textContent = "Login service unavailable.";
+    }
+  }
+
+  loginBtn.addEventListener("click", attemptLogin);
+  passwordInput.addEventListener("keypress", function (e) {
+    if (e.key === "Enter") attemptLogin();
+  });
+
+  logoutBtn.addEventListener("click", function () {
+    try { localStorage.removeItem("incora_current_user"); } catch (e) {}
+    showLogin();
+  });
+
+  (function initLogin() {
+    let storedUser = null;
+    try {
+      storedUser = localStorage.getItem("incora_current_user");
+    } catch (e) {}
+    if (storedUser) {
+      showApp(storedUser);
+    } else {
+      showLogin();
+    }
+  })();
+
+  let partsData = [];
+
+  const statusDot = document.getElementById("statusDot");
+  const statusText = document.getElementById("statusText");
+  const summaryText = document.getElementById("summaryText");
+  const resultsTable = document.getElementById("resultsTable");
+  const resultsBody = document.getElementById("resultsBody");
+  const noResults = document.getElementById("noResults");
+  const partInput = document.getElementById("partInput");
+  const searchBtn = document.getElementById("searchBtn");
+  const clearBtn = document.getElementById("clearBtn");
+
+  function logSearchToBackend(requested, index, foundCount) {
+    try {
+      if (!LOG_ENDPOINT) return;
+      const results = {};
+      requested.forEach(code => {
+        const key = code.toUpperCase();
+        const row = index[key];
+        results[code] = {
+          quantity: row && row.quantity_available ? row.quantity_available : "",
+          price: row && row.sell_price ? row.sell_price : ""
+        };
+      });
+      const payload = {
+        username: currentUser || "",
+        parts: requested,
+        results: results
+      };
+      fetch(LOG_ENDPOINT, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      }).catch(e => {});
+    } catch (e) {}
+  }
+
+  async function loadData() {
+    try {
+      const response = await fetch("parts_data.csv?_=" + Date.now());
+      if (!response.ok) {
+        statusDot.className = "status-dot error";
+        statusText.textContent = "Error loading data file (parts_data.csv).";
+        return;
+      }
+      const csvText = await response.text();
+      partsData = parseCSV(csvText);
+      statusDot.className = "status-dot ok";
+      statusText.textContent = "Data loaded. Last refreshed now.";
+      summaryText.textContent = partsData.length + " part numbers available.";
+    } catch (err) {
+      statusDot.className = "status-dot error";
+      statusText.textContent = "Error loading data: " + err;
+    }
+  }
+
+  function parseCSV(text) {
+    const lines = text.trim().split(/\r?\n/);
+    if (lines.length < 2) return [];
+    const headers = lines[0].split(",");
+    const data = [];
+    for (let i = 1; i < lines.length; i++) {
+      if (!lines[i].trim()) continue;
+      const cols = splitCSVLine(lines[i]);
+      const row = {};
+      headers.forEach((h, idx) => {
+        row[h.trim()] = (cols[idx] || "").trim();
+      });
+      data.push(row);
+    }
+    return data;
+  }
+
+  function splitCSVLine(line) {
+    const result = [];
+    let current = "";
+    let inQuotes = false;
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+      if (char === '"') {
+        inQuotes = !inQuotes;
+      } else if (char === "," && !inQuotes) {
+        result.push(current);
+        current = "";
+      } else {
+        current += char;
+      }
+    }
+    result.push(current);
+    return result;
+  }
+
+  function normalisePartList(raw) {
+    const tokens = raw
+      .split(/\r?\n|,|\s/)
+      .map(t => t.trim())
+      .filter(Boolean);
+    return [...new Set(tokens)];
+  }
+
+  function searchParts() {
+    const raw = partInput.value.trim();
+    resultsBody.innerHTML = "";
+    resultsTable.style.display = "none";
+    noResults.style.display = "none";
+    summaryText.textContent = "";
+
+    if (!raw) {
+      noResults.style.display = "block";
+      noResults.textContent = "Please enter at least one part number above.";
+      return;
+    }
+
+    const requested = normalisePartList(raw);
+    if (requested.length === 0) {
+      noResults.style.display = "block";
+      noResults.textContent = "Please enter valid part numbers.";
+      return;
+    }
+
+    const index = {};
+    partsData.forEach(row => {
+      if (row.part_number) index[row.part_number.toUpperCase()] = row;
+    });
+
+    let foundCount = 0;
+
+    requested.forEach(code => {
+      const key = code.toUpperCase();
+      const row = index[key];
+      const tr = document.createElement("tr");
+
+      const tdPart = document.createElement("td");
+      const tdQty = document.createElement("td");
+      const tdPrice = document.createElement("td");
+      const tdCert = document.createElement("td");
+
+      tdPart.textContent = code;
+
+      if (row) {
+        foundCount++;
+        tdQty.textContent = row.quantity_available || "";
+        tdPrice.textContent = row.sell_price || "";
+        const cert = row.cert_available || row["cert available"] || "";
+        tdCert.textContent = cert;
+      } else {
+        tdQty.innerHTML = '<span class="badge">Not found</span>';
+        tdPrice.textContent = "-";
+        tdCert.textContent = "-";
+      }
+
+      tr.appendChild(tdPart);
+      tr.appendChild(tdQty);
+      tr.appendChild(tdPrice);
+      tr.appendChild(tdCert);
+      resultsBody.appendChild(tr);
+    });
+
+    resultsTable.style.display = "";
+    summaryText.textContent =
+      foundCount + " of " + requested.length + " part numbers found.";
+
+    if (foundCount === 0) {
+      noResults.style.display = "block";
+      noResults.textContent =
+        "No matching parts found in current dataset.";
+    } else {
+      noResults.style.display = "none";
+    }
+
+    logSearchToBackend(requested, index, foundCount);
+  }
+
+  function clearSearch() {
+    partInput.value = "";
+    resultsBody.innerHTML = "";
+    resultsTable.style.display = "none";
+    noResults.style.display = "block";
+    noResults.textContent =
+      "No results yet. Enter part numbers above and click Search.";
+    summaryText.textContent = "";
+  }
+
+  searchBtn.addEventListener("click", searchParts);
+  clearBtn.addEventListener("click", clearSearch);
+
+  partInput.addEventListener("keypress", function (e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      searchParts();
+    }
+  });
+
+  loadData();
+</script>
+</body>
+</html>
