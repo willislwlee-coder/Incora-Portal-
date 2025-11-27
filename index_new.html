@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Incora Customer Parts Portal - Advanced Access</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* ------------------------------------------------------------------- */
+    /* ROOT VARIABLES (UPDATED FOR DARK MODE & NEON) */
+    /* ------------------------------------------------------------------- */
+    :root {
+      --primary: #00e4ff; /* Neon Cyan */
+      --secondary: #007bff; /* Bright Blue */
+      --text-light: #e0f7fa; /* Light text for dark BG */
+      --text-faded: #8096a7; /* Faded/Subtle text */
+      --bg-dark: #071520; /* Deep Space Black/Blue */
+      --card-bg: rgba(18, 41, 61, 0.4); /* Semi-transparent dark blue */
+      --border-dark: rgba(0, 228, 255, 0.2); /* Subtle neon border */
+      --danger: #e74c3c;
+      --success: #2ecc71;
+    }
+    
+    /* ------------------------------------------------------------------- */
+    /* BASE STYLES & FONTS (FUTURISTIC) */
+    /* ------------------------------------------------------------------- */
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Exo 2', system-ui, sans-serif; 
+      background: var(--bg-dark);
+      /* Subtle radial glow effect for depth */
+      background-image: radial-gradient(circle at top left, rgba(0, 228, 255, 0.08) 0%, transparent 40%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      color: var(--text-light);
+    }
+    .app-wrapper {
+      width: 100%;
+      max-width: 1000px; /* Slightly wider for a dashboard feel */
+      padding: 24px;
+    }
+    
+    /* ------------------------------------------------------------------- */
+    /* CARD (GLASSMORPHISM EFFECT) */
+    /* ------------------------------------------------------------------- */
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(10px); /* Frosted Glass Effect */
+      border-radius: 16px;
+      border: 1px solid var(--border-dark);
+      box-shadow: 0 0 40px rgba(0, 228, 255, 0.15), 0 0 10px rgba(0, 0, 0, 0.5);
+      padding: 32px 36px 36px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ------------------------------------------------------------------- */
+    /* HEADER & BRANDING */
+    /* ------------------------------------------------------------------- */
+    .card-header {
+      display: flex; /* Flexbox for alignment */
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .brand-logo-img {
+      height: 38px;
+      /* Optional: Can add a glow effect here if using a transparent logo */
+    }
+    .brand-text-main {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 22px;
+      color: var(--primary); /* Neon Cyan */
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .brand-text-sub {
+      font-size: 11px;
+      opacity: 0.9;
+      color: var(--text-faded);
+      letter-spacing: 0.2em;
+    }
+    .top-bar-meta {
+      color: var(--text-faded);
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    h1 {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-light);
+      margin: 0 0 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      text-shadow: 0 0 5px rgba(0, 228, 255, 0.4);
+    }
+    .subtitle {
+      font-size: 14px;
+      margin-bottom: 24px;
+      color: var(--text-faded);
+    }
+    
+    /* ------------------------------------------------------------------- */
+    /* SEARCH SECTION (COMMAND PROMPT LOOK) */
+    /* ------------------------------------------------------------------- */
+    .search-section {
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 12px;
+      padding: 18px 20px 20px;
+      border: 1px solid var(--border-dark);
+      margin-bottom: 20px;
+    }
+    .search-section label {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      color: var(--primary);
+      text-shadow: 0 0 3px rgba(0, 228, 255, 0.2);
+    }
+    .search-row {
+      display: flex;
+      gap: 15px; /* Space between textarea and buttons */
+      margin-top: 8px;
+    }
+    .search-row textarea {
+      flex-grow: 1; /* Textarea takes available space */
+      background: transparent;
+      color: var(--text-light);
+      min-height: 80px;
+      padding: 10px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border-dark);
+      font-size: 14px;
+      transition: all 0.2s;
+      resize: vertical; /* Allow vertical resizing */
+    }
+    .search-row textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 12px rgba(0, 228, 255, 0.6); /* Stronger glow on focus */
+      outline: none; /* Remove default outline */
+    }
+    .button-row {
+      display: flex;
+      flex-direction: column; /* Buttons stack vertically */
+      gap: 10px;
+    }
+    .hint {
+      font-size: 11px;
+      color: var(--text-faded);
+      margin-top: 10px;
+      line-height: 1.6;
+    }
+
+    /* ------------------------------------------------------------------- */
+    /* BUTTONS (CHISELED/CYAN GLOW) */
+    /* ------------------------------------------------------------------- */
+    button {
+      border: none;
+      cursor: pointer;
+      border-radius: 6px; /* Less rounded than 999px for a tech feel */
+      padding: 10px 20px;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      background: var(--primary);
+      color: var(--bg-dark); /* Dark text on bright button */
+      box-shadow: 0 0 8px rgba(0, 228, 255, 0.7);
+      transition: all 0.2s;
+    }
+    button:hover:not(:disabled) {
+        box-shadow: 0 0 15px rgba(0, 228, 255, 1);
+        transform: translateY(-1px);
+    }
+    button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        box-shadow: none;
+    }
+    button.secondary {
+      background: transparent;
+      color: var(--primary);
+      border: 1px solid var(--border-dark);
+      box-shadow: none;
+    }
+    button.secondary:hover:not(:disabled) {
+        border-color: var(--primary);
+        color: var(--primary);
+        box-shadow: 0 0 8px rgba(0, 228, 255, 0.3);
+    }
+    
+    /* ------------------------------------------------------------------- */
+    /* STATUS BAR & FOOTER */
+    /* ------------------------------------------------------------------- */
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 15px;
+      font-size: 12px;
+      color: var(--text-faded);
+    }
+    .status-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 6px;
+      background: var(--text-faded); /* Default for loading */
+      box-shadow: 0 0 4px rgba(255, 255, 255, 0.2);
+    }
+    .status-dot.ok {
+      background: var(--success); /* Green */
+      box-shadow: 0 0 4px var(--success);
+    }
+    .status-dot.error {
+      background: var(--danger);
+      box-shadow: 0 0 4px var(--danger);
+    }
+    .footer-note {
+      font-size: 10px;
+      color: var(--text-faded);
+      margin-top: 20px;
+      border-top: 1px dashed rgba(255, 255, 255, 0.05);
+      padding-top: 10px;
+      text-align: center;
+    }
+
+    /* ------------------------------------------------------------------- */
+    /* TABLE RESULTS (HUD LINES) */
+    /* ------------------------------------------------------------------- */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: 'Exo 2', sans-serif;
+      margin-top: 20px;
+      font-size: 14px;
+    }
+    th, td {
+      text-align: left;
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(0, 228, 255, 0.1); /* Neon-tinted divider */
+    }
+    th {
+      background: rgba(0, 0, 0, 0.15);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--primary);
+      text-transform: uppercase;
+    }
+    tr:nth-child(even) td {
+      background: rgba(0, 0, 0, 0.08);
+    }
+    .badge {
+      background: rgba(231, 76, 60, 0.2); /* Red for Not Found */
+      color: var(--danger);
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+    }
+    .no-results {
+      color: var(--text-faded);
+      text-align: center;
+      margin-top: 20px;
+      padding: 15px;
+      border: 1px dashed var(--border-dark);
+      border-radius: 8px;
+    }
+
+    /* ------------------------------------------------------------------- */
+    /* LOGIN OVERLAY (SPLIT-SCREEN) */
+    /* ------------------------------------------------------------------- */
+    .login-overlay {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      z-index: 999;
+      background: var(--bg-dark); /* Dark background behind the split view */
+    }
+    
+    .login-image-half {
+        flex: 1;
+        background-color: #0d1f2e; /* Dark base color for image side */
+        /* IMPORTANT: Replace this with your actual Incora aerospace image */
+        background-image: url('https://images.unsplash.com/photo-1542475510-91ffdd370b3b?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); /* Placeholder image of a jet engine */
+        background-size: cover;
+        background-position: center;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    /* Add a subtle dark overlay to the image */
+    .login-image-half::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.4); /* Darkens the image slightly */
+    }
+
+    .login-form-half {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background: var(--bg-dark);
+        padding: 40px;
+        position: relative; /* For the rotating graphic */
+        overflow: hidden; /* Hide overflowing graphic */
+    }
+    /* Background graphic for the login form side */
+    .login-form-half::before {
+        content: '';
+        position: absolute;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle at center, rgba(0, 228, 255, 0.1) 0%, transparent 70%);
+        border: 1px solid rgba(0, 228, 255, 0.05);
+        border-radius: 50%;
+        left: -150px;
+        top: -150px;
+        animation: rotate360 40s linear infinite;
+        opacity: 0.6;
+    }
+    .login-form-half::after {
+        content: '';
+        position: absolute;
+        width: 250px;
+        height: 250px;
+        background: radial-gradient(circle at center, rgba(0, 228, 255, 0.08) 0%, transparent 60%);
+        border: 1px solid rgba(0, 228, 255, 0.03);
+        border-radius: 50%;
+        right: -80px;
+        bottom: -80px;
+        animation: rotate360Reverse 30s linear infinite;
+        opacity: 0.4;
+    }
+    @keyframes rotate360 {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    @keyframes rotate360Reverse {
+        from { transform: rotate(360deg); }
+        to { transform: rotate(0deg); }
+    }
+    
+    .login-card {
+      background: transparent; /* No card background on login form */
+      padding: 0;
+      box-shadow: none;
+      width: 100%;
+      max-width: 380px;
+      text-align: left;
+      position: relative; /* To keep content above ::before/::after */
+      z-index: 1; /* Ensure content is on top of animated elements */
+    }
+    
+    .login-title {
+        font-family: 'Rajdhani', sans-serif;
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--primary);
+        margin: 10px 0 6px;
+        text-shadow: 0 0 5px rgba(0, 228, 255, 0.4);
+    }
+    .login-sub {
+        font-size: 14px;
+        color: var(--text-faded);
+        margin-bottom: 25px;
+    }
+    .login-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-light);
+        margin-bottom: 6px;
+        display: block; /* Ensures label takes full width */
+    }
+    .login-input {
+        background: rgba(0, 0, 0, 0.3);
+        color: var(--text-light);
+        border: 1px solid var(--border-dark);
+        padding: 10px 12px;
+        border-radius: 6px;
+        margin-bottom: 15px;
+        width: 100%; /* Full width inputs */
+        font-size: 15px;
+        transition: all 0.2s;
+    }
+    .login-input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 6px var(--primary);
+        outline: none;
+    }
+    .login-error {
+        color: var(--danger);
+        font-size: 12px;
+        min-height: 18px; /* Reserve space to prevent layout shift */
+        margin-bottom: 10px;
+    }
+    .login-footer {
+        margin-top: 15px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-end; /* Align meta to right */
+    }
+    .login-footer button {
+        width: 100%; /* Login button takes full width */
+    }
+    .login-meta {
+        font-size: 11px;
+        color: var(--text-faded);
+        text-align: right;
+        line-height: 1.5;
+    }
+    
+    /* Responsive adjustments for mobile/smaller screens */
+    @media (max-width: 960px) {
+        .login-image-half {
+            display: none; /* Hide image on smaller screens */
+        }
+        .login-form-half {
+            flex: 0 0 100%;
+        }
+    }
+    
+    @media (max-width: 640px) {
+      .app-wrapper { padding: 15px; }
+      .card {
+        padding: 24px 20px;
+      }
+      .card-header { 
+        flex-direction: column; 
+        align-items: flex-start; 
+        gap: 15px; /* Space between logo and user info */
+      }
+      .search-row { 
+        flex-direction: column; 
+        gap: 10px;
+      }
+      .button-row { 
+        flex-direction: row; 
+        justify-content: center; /* Center buttons on mobile */
+        width: 100%;
+      }
+      .button-row button {
+          flex: 1; /* Buttons take equal space */
+      }
+      .status-bar { flex-direction: column; align-items: flex-start; gap: 5px; }
+      .login-form-half { padding: 30px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-overlay" id="loginOverlay">
+    <div class="login-image-half"></div>
+    <div class="login-form-half">
+      <div class="login-card">
+        <div class="brand" style="margin-bottom:10px;">
+          <img src="incora-logo.png" alt="Incora" class="brand-logo-img" />
+          <div>
+            <div class="brand-text-main">INCORA</div>
+            <div class="brand-text-sub">Customer Access</div>
+          </div>
+        </div>
+        <h2 class="login-title">Secure Portal Access</h2>
+        <p class="login-sub">
+          Authorised users only. Enter your credentials for access to aerospace parts data.
+        </p>
+
+        <label class="login-label" for="usernameInput">Username</label>
+        <input type="text" id="usernameInput" class="login-input" placeholder="e.g. user001" />
+
+        <label class="login-label" for="passwordInput">Password</label>
+        <input type="password" id="passwordInput" class="login-input" placeholder="Enter password" />
+
+        <div class="login-error" id="loginError"></div>
+        <div class="login-footer">
+          <button id="loginBtn">Sign in</button>
+          <div class="login-meta">
+            Contact your Incora representative if you need access.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="app-wrapper" id="appRoot" style="display:none;">
+    <div class="card">
+      <div class="card-header">
+        <div class="brand">
+          <img src="incora-logo.png" alt="Incora" class="brand-logo-img" />
+          <div>
+            <div class="brand-text-main">INCORA</div>
+            <div class="brand-text-sub">Customer Parts Availability</div>
+          </div>
+        </div>
+        <div class="top-bar-meta">
+          <span id="userLabel"></span>
+          <button type="button" class="secondary" id="logoutBtn">Logout</button>
+        </div>
+      </div>
+
+      <h1>Parts Availability &amp; Pricing Search</h1>
+      <div class="subtitle">
+        Enter one or more part numbers to check current sell price and on-hand quantity.
+      </div>
+
+      <div class="search-section">
+        <label for="partInput">Part numbers</label>
+        <div class="search-row">
+          <textarea id="partInput" placeholder="e.g. ABC123, DEF456&#10;You can paste from Excel or enter one per line."></textarea>
+          <div class="button-row">
+            <button id="searchBtn"><span>Search</span></button>
+            <button type="button" class="secondary" id="clearBtn">Clear</button>
+          </div>
+        </div>
+        <div class="hint">
+          • Separate part numbers by commas, spaces, or new lines. <br/>
+          • Search is not case-sensitive and matches exact part numbers.
+        </div>
+        <div class="status-bar">
+          <span>
+            <span id="statusDot" class="status-dot"></span>
+            <span id="statusText">Loading data...</span>
+          </span>
+          <span id="summaryText"></span>
+        </div>
+      </div>
+
+      <table id="resultsTable" style="display:none;">
+        <thead>
+          <tr>
+            <th>Part Number</th>
+            <th>Quantity Available</th>
+            <th>Sell Price</th>
+            <th>Certificate Available</th>
+          </tr>
+        </thead>
+        <tbody id="resultsBody"></tbody>
+      </table>
+      <div class="no-results" id="noResults" style="display:none;">
+        No results yet. Enter part numbers above and click <strong>Search</strong>.
+      </div>
+
+      <div class="footer-note">
+        Data shown is indicative and subject to confirmation. &copy; Incora.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // -------------------------------------------------------------------
+    // CONFIG: AUTH + LOG ENDPOINTS (from your working setup)
+    // -------------------------------------------------------------------
+    const AUTH_ENDPOINT =
+      "https://script.google.com/macros/s/AKfycbyVfU0GpnO-ZOOvX4T0rvE2meP8q1PpuJSktGNvnI53J9hYNyfRplraf4cNd3MRXHxJ/exec";
+    const LOG_ENDPOINT =
+      "https://script.google.com/macros/s/AKfycbwfjf0KZ5WB95XLdEd9Wl2RGjf_kiVMTNli23kBOYfNv1pNacnm_jBHE8DuarAvmUklkQ/exec";
+
+    // -------------------------------------------------------------------
+    // LOGIN LOGIC
+    // -------------------------------------------------------------------
+    let currentUser = null;
+
+    const loginOverlay = document.getElementById("loginOverlay");
+    const appRoot = document.getElementById("appRoot");
+    const loginBtn = document.getElementById("loginBtn");
+    const usernameInput = document.getElementById("usernameInput");
+    const passwordInput = document.getElementById("passwordInput");
+    const loginError = document.getElementById("loginError");
+    const userLabel = document.getElementById("userLabel");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    function showApp(username) {
+      currentUser = username;
+      userLabel.textContent = "Logged in as: " + username;
+      loginOverlay.style.display = "none";
+      appRoot.style.display = "block";
+    }
+
+    function showLogin() {
+      appRoot.style.display = "none";
+      loginOverlay.style.display = "flex";
+      usernameInput.value = "";
+      passwordInput.value = "";
+      loginError.textContent = "";
+    }
+
+    async function attemptLogin() {
+      const u = usernameInput.value.trim();
+      const p = passwordInput.value.trim();
+
+      if (!u || !p) {
+        loginError.textContent = "Username and password are required.";
+        return;
+      }
+
+      loginError.textContent = "Checking...";
+      loginBtn.disabled = true;
+
+      try {
+        const body = new URLSearchParams({ username: u, password: p }).toString();
+        const response = await fetch(AUTH_ENDPOINT, {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          try {
+            localStorage.setItem("incora_current_user", u);
+          } catch (e) {}
+          showApp(u);
+        } else {
+          loginError.textContent = "Invalid username or password.";
+        }
+      } catch (err) {
+        loginError.textContent = "Login service unavailable.";
+      } finally {
+        loginBtn.disabled = false;
+      }
+    }
+
+    loginBtn.addEventListener("click", attemptLogin);
+    passwordInput.addEventListener("keypress", function (e) {
+      if (e.key === "Enter") {
+        attemptLogin();
+      }
+    });
+
+    logoutBtn.addEventListener("click", function () {
+      try {
+        localStorage.removeItem("incora_current_user");
+      } catch (e) {}
+      showLogin();
+    });
+
+    (function initLogin() {
+      let storedUser = null;
+      try {
+        storedUser = localStorage.getItem("incora_current_user");
+      } catch (e) {}
+      if (storedUser) {
+        showApp(storedUser);
+      } else {
+        showLogin();
+      }
+    })();
+
+    // -------------------------------------------------------------------
+    // DATA LOADING + SEARCH LOGIC
+    // -------------------------------------------------------------------
+    let partsData = [];
+
+    const statusDot = document.getElementById("statusDot");
+    const statusText = document.getElementById("statusText");
+    const summaryText = document.getElementById("summaryText");
+    const resultsTable = document.getElementById("resultsTable");
+    const resultsBody = document.getElementById("resultsBody");
+    const noResults = document.getElementById("noResults");
+    const partInput = document.getElementById("partInput");
+    const searchBtn = document.getElementById("searchBtn");
+    const clearBtn = document.getElementById("clearBtn");
+
+    function setStatusLoading() {
+      statusDot.className = "status-dot";
+      statusText.textContent = "Loading data...";
+      summaryText.textContent = "";
+    }
+
+    function setStatusOk(msg) {
+      statusDot.className = "status-dot ok";
+      statusText.textContent = msg;
+    }
+
+    function setStatusError(msg) {
+      statusDot.className = "status-dot error";
+      statusText.textContent = msg;
+    }
+
+    async function loadData() {
+      setStatusLoading();
+      try {
+        // cache-bust so new parts_data.csv is always used
+        const response = await fetch("parts_data.csv?_=" + Date.now());
+        if (!response.ok) {
+          setStatusError("Error loading parts_data.csv (status " + response.status + ").");
+          return;
+        }
+        const csvText = await response.text();
+        partsData = parseCSV(csvText);
+        setStatusOk("Data loaded. Last refreshed just now.");
+        summaryText.textContent = partsData.length + " part numbers available.";
+      } catch (err) {
+        setStatusError("Error loading data: " + err.message);
+      }
+    }
+
+    function parseCSV(text) {
+      const lines = text.trim().split(/?
+/);
+      if (lines.length < 2) return [];
+      const headers = lines[0].split(",").map(h => h.trim());
+      const data = [];
+
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i];
+        if (!line.trim()) continue;
+        const cols = splitCSVLine(line);
+        const row = {};
+        headers.forEach((h, idx) => {
+          row[h] = (cols[idx] || "").trim();
+        });
+        data.push(row);
+      }
+      return data;
+    }
+
+    // Basic CSV line splitter that respects quotes
+    function splitCSVLine(line) {
+      const result = [];
+      let current = "";
+      let inQuotes = false;
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        if (char === '"') {
+          inQuotes = !inQuotes;
+        } else if (char === "," && !inQuotes) {
+          result.push(current);
+          current = "";
+        } else {
+          current += char;
+        }
+      }
+      result.push(current);
+      return result;
+    }
+
+    function normalisePartList(raw) {
+      const tokens = raw
+        .split(/?
+|,|\s/) // split on newline, comma, or space
+        .map(t => t.trim())
+        .filter(Boolean);
+      // unique
+      return [...new Set(tokens)];
+    }
+
+    function buildIndex() {
+      const index = {};
+      if (!partsData || !partsData.length) return index;
+      partsData.forEach(row => {
+        const pn = (row["part_number"] || "").trim();
+        if (!pn) return;
+        index[pn.toUpperCase()] = row;
+      });
+      return index;
+    }
+
+    function clearResults() {
+      resultsBody.innerHTML = "";
+      resultsTable.style.display = "none";
+      noResults.style.display = "block";
+      summaryText.textContent = "";
+    }
+
+    function logSearchToBackend(requested, index, foundCount) {
+      try {
+        if (!LOG_ENDPOINT) return;
+        const results = {};
+        requested.forEach(code => {
+          const key = code.toUpperCase();
+          const row = index[key];
+          results[code] = {
+            quantity: row && row.quantity_available ? row.quantity_available : "",
+            price: row && row.sell_price ? row.sell_price : ""
+          };
+        });
+        const payload = {
+          username: currentUser || "",
+          parts: requested,
+          results: results,
+          foundCount: foundCount
+        };
+        fetch(LOG_ENDPOINT, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        }).catch(() => {});
+      } catch (e) {
+        // swallow logging errors
+      }
+    }
+
+    function searchParts() {
+      const raw = partInput.value || "";
+      const requested = normalisePartList(raw);
+
+      if (!requested.length) {
+        clearResults();
+        statusDot.className = "status-dot";
+        statusText.textContent = "Enter at least one part number to search.";
+        return;
+      }
+
+      const index = buildIndex();
+      resultsBody.innerHTML = "";
+
+      let foundCount = 0;
+
+      requested.forEach(code => {
+        const key = code.toUpperCase();
+        const row = index[key];
+
+        const tr = document.createElement("tr");
+
+        if (row) {
+          foundCount++;
+          const tdPn = document.createElement("td");
+          tdPn.textContent = row["part_number"] || code;
+
+          const tdQty = document.createElement("td");
+          tdQty.textContent = row["quantity_available"] || "";
+
+          const tdSell = document.createElement("td");
+          tdSell.textContent = row["sell_price"] || "";
+
+          const tdCert = document.createElement("td");
+          tdCert.textContent = row["cert available"] || "";
+
+          tr.appendChild(tdPn);
+          tr.appendChild(tdQty);
+          tr.appendChild(tdSell);
+          tr.appendChild(tdCert);
+        } else {
+          const tdPn = document.createElement("td");
+          tdPn.textContent = code;
+
+          const tdMsg = document.createElement("td");
+          tdMsg.colSpan = 3;
+          const badge = document.createElement("span");
+          badge.className = "badge";
+          badge.textContent = "Not found in current file";
+          tdMsg.appendChild(badge);
+
+          tr.appendChild(tdPn);
+          tr.appendChild(tdMsg);
+        }
+
+        resultsBody.appendChild(tr);
+      });
+
+      resultsTable.style.display = "table";
+      noResults.style.display = "none";
+
+      summaryText.textContent = `${foundCount} of ${requested.length} part numbers found.`;
+      statusDot.className = "status-dot ok";
+      statusText.textContent = "Search completed.";
+
+      logSearchToBackend(requested, index, foundCount);
+    }
+
+    function clearSearch() {
+      partInput.value = "";
+      clearResults();
+      statusDot.className = "status-dot";
+      statusText.textContent = "Ready.";
+    }
+
+    searchBtn.addEventListener("click", searchParts);
+    clearBtn.addEventListener("click", clearSearch);
+
+    // Load CSV when app starts
+    loadData();
+  </script>
+</body>
+</html>
