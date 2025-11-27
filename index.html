@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Incora Parts Portal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --primary: #00e5ff;
+      --accent: #7dd3fc;
+      --bg-dark: #020617;
+      --danger: #f97373;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      color: #e5e7eb;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background:
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.22), transparent 55%),
+        radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.3), transparent 55%),
+        radial-gradient(circle at center, rgba(15, 23, 42, 0.9), #020617);
+      background-attachment: fixed;
+      position: relative;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: url('engine-bg.png');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.22;
+      mix-blend-mode: screen;
+      pointer-events: none;
+      z-index: -2;
+    }
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at center, rgba(15, 23, 42, 0.82), transparent 75%);
+      pointer-events: none;
+      z-index: -1;
+    }
+    .app-wrapper {
+      width: 100%;
+      max-width: 1120px;
+      padding: 26px 16px;
+    }
+    .card {
+      background: radial-gradient(circle at top, rgba(17, 24, 39, 0.98), rgba(15, 23, 42, 0.96));
+      border-radius: 22px;
+      box-shadow:
+        0 22px 60px rgba(15, 23, 42, 0.85),
+        0 0 0 1px rgba(148, 163, 184, 0.35);
+      padding: 22px 22px 20px;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      backdrop-filter: blur(28px);
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+      gap: 16px;
+    }
+    .brand-logo-img {
+      height: 36px;
+      width: auto;
+      object-fit: contain;
+      display: block;
+    }
+    .user-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    #userLabel {
+      font-size: 12px;
+      color: #e5e7eb;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.92);
+      border: 1px solid rgba(148, 163, 184, 0.7);
+    }
+    button {
+      border-radius: 999px;
+      border: none;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: radial-gradient(circle at top left, #38bdf8, #0ea5e9);
+      color: #0b1220;
+      box-shadow: 0 10px 28px rgba(8, 47, 73, 0.9);
+      transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+      white-space: nowrap;
+    }
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 34px rgba(8, 47, 73, 0.95);
+      background: radial-gradient(circle at top, #7dd3fc, #38bdf8);
+    }
+    button:active {
+      transform: translateY(0);
+      box-shadow: 0 6px 18px rgba(8, 47, 73, 0.8);
+    }
+    button.secondary {
+      background: rgba(15, 23, 42, 0.9);
+      color: #e5e7eb;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.9);
+    }
+    button.secondary:hover {
+      background: rgba(15, 23, 42, 0.95);
+      box-shadow: 0 10px 26px rgba(15, 23, 42, 1);
+    }
+    button.small {
+      padding: 4px 10px;
+      font-size: 12px;
+      box-shadow: none;
+    }
+    h1 {
+      margin: 0 0 6px 0;
+      font-size: 22px;
+      letter-spacing: 0.06em;
+      color: #e5f2ff;
+      text-shadow: 0 0 18px rgba(125, 211, 252, 0.5);
+    }
+    .subtitle {
+      font-size: 13px;
+      margin-bottom: 16px;
+      color: #cbd5f5;
+    }
+    .search-section {
+      background: radial-gradient(circle at top, rgba(17, 24, 39, 0.96), rgba(15, 23, 42, 0.96));
+      border-radius: 18px;
+      padding: 16px 18px 18px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      margin-bottom: 14px;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.9);
+    }
+    .search-section label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #d1d5db;
+      margin-bottom: 6px;
+      display: block;
+    }
+    .search-row {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+    textarea {
+      flex: 1;
+      min-height: 90px;
+      padding: 10px 11px;
+      border-radius: 12px;
+      border: 1px solid rgba(148, 163, 184, 0.8);
+      resize: vertical;
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+      background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.95), #020617);
+      color: #e5e7eb;
+    }
+    textarea::placeholder { color: #9ca3af; }
+    textarea:focus {
+      border-color: #38bdf8;
+      box-shadow:
+        0 0 0 1px rgba(56, 189, 248, 0.8),
+        0 0 0 6px rgba(56, 189, 248, 0.2);
+    }
+    .button-column {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-top: 2px;
+      min-width: 120px;
+    }
+    .hint {
+      font-size: 11px;
+      color: #cbd5f5;
+      margin-top: 8px;
+      line-height: 1.4;
+    }
+    .status-bar {
+      font-size: 11px;
+      color: #cbd5f5;
+      margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #52525b;
+      box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.7);
+    }
+    .status-dot.ok {
+      background: #22c55e;
+      box-shadow:
+        0 0 0 1px rgba(34, 197, 94, 0.6),
+        0 0 16px rgba(22, 163, 74, 0.9);
+    }
+    .status-dot.error {
+      background: #f97373;
+      box-shadow:
+        0 0 0 1px rgba(248, 113, 113, 0.7),
+        0 0 16px rgba(248, 113, 113, 0.95);
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1.35fr);
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .results-panel {
+      min-width: 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 6px;
+      font-size: 13px;
+      color: #e5e7eb;
+    }
+    th, td {
+      padding: 7px 8px;
+      text-align: left;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.9);
+    }
+    th {
+      background: radial-gradient(circle at top, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.98));
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #d1d5db;
+    }
+    tr:nth-child(even) td {
+      background: rgba(15, 23, 42, 0.92);
+    }
+    tr:nth-child(odd) td {
+      background: rgba(15, 23, 42, 0.86);
+    }
+    .no-results {
+      font-size: 13px;
+      color: #cbd5f5;
+      margin-top: 10px;
+      padding: 8px 10px;
+      background: rgba(15, 23, 42, 0.96);
+      border-radius: 10px;
+      border: 1px dashed rgba(148, 163, 184, 0.8);
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      font-size: 10px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 600;
+    }
+    .badge-ok {
+      background: rgba(34, 197, 94, 0.18);
+      color: #a7f3d0;
+      border: 1px solid rgba(34, 197, 94, 0.7);
+    }
+    .badge-none {
+      background: rgba(248, 113, 113, 0.16);
+      color: #fecaca;
+      border: 1px solid rgba(248, 113, 113, 0.7);
+    }
+    .cart-panel {
+      background: rgba(15, 23, 42, 0.98);
+      border-radius: 16px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      padding: 12px 12px 10px;
+      box-shadow: 0 14px 32px rgba(15, 23, 42, 0.95);
+    }
+    .cart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+      flex-wrap: wrap;
+    }
+    .cart-title {
+      font-size: 12px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #cbd5f5;
+    }
+    .cart-empty {
+      font-size: 12px;
+      color: #9ca3af;
+      font-style: italic;
+      margin: 6px 0 8px;
+    }
+    .cart-list {
+      max-height: 190px;
+      overflow-y: auto;
+      margin-bottom: 8px;
+      padding-right: 2px;
+    }
+
+    .cart-summary {
+      font-size: 12px;
+      color: #e5e7eb;
+      margin: 4px 0 8px;
+      padding: 6px 8px;
+      border-radius: 8px;
+      background: rgba(15, 23, 42, 0.96);
+      border: 1px solid rgba(55, 65, 81, 0.9);
+    }
+    .qty-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+      font-size: 11px;
+      color: #cbd5f5;
+    }
+    .qty-input {
+      width: 70px;
+      padding: 3px 6px;
+      border-radius: 8px;
+      border: 1px solid rgba(148, 163, 184, 0.9);
+      background: rgba(15, 23, 42, 0.98);
+      color: #e5e7eb;
+      font-size: 11px;
+      outline: none;
+    }
+    .qty-input:focus {
+      border-color: #38bdf8;
+      box-shadow:
+        0 0 0 1px rgba(56, 189, 248, 0.8),
+        0 0 0 4px rgba(56, 189, 248, 0.25);
+    }
+    .line-total {
+      font-weight: 500;
+    }
+    .line-warning {
+      color: var(--danger);
+      font-weight: 500;
+    }
+    .cart-item {
+      font-size: 12px;
+      padding: 6px 6px;
+      border-radius: 10px;
+      background: rgba(15, 23, 42, 0.96);
+      border: 1px solid rgba(55, 65, 81, 0.9);
+      margin-bottom: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .cart-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+    .cart-part {
+      font-weight: 600;
+      color: #e5f2ff;
+      font-size: 12px;
+    }
+    .cart-meta {
+      font-size: 11px;
+      color: #cbd5f5;
+    }
+    .cart-remove {
+      font-size: 11px;
+      padding: 3px 8px;
+    }
+    .order-textarea {
+      width: 100%;
+      min-height: 80px;
+      border-radius: 10px;
+      border: 1px solid rgba(148, 163, 184, 0.8);
+      background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.95), #020617);
+      color: #e5e7eb;
+      font-size: 12px;
+      padding: 7px 8px;
+      resize: vertical;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+    .order-textarea::placeholder {
+      color: #9ca3af;
+    }
+    .cart-footer-buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 6px;
+      flex-wrap: wrap;
+    }
+    .footer-note {
+      font-size: 11px;
+      color: #9ca3af;
+      margin-top: 14px;
+      border-top: 1px solid rgba(51, 65, 85, 0.9);
+      padding-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .footer-right {
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    /* LOGIN OVERLAY */
+    .login-overlay {
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at center, rgba(15, 23, 42, 0.6), rgba(2, 6, 23, 0.9)),
+        radial-gradient(circle at top, rgba(56, 189, 248, 0.55), transparent 60%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      z-index: 1000;
+      overflow: hidden;
+    }
+    .login-overlay::before {
+      content: "";
+      position: absolute;
+      inset: -40px;
+      background-image: url('engine-login.png');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.7;
+      mix-blend-mode: screen;
+      filter: saturate(1.3);
+    }
+    .login-overlay::after {
+      content: "";
+      position: absolute;
+      inset: -40px;
+      background:
+        radial-gradient(circle at center, rgba(15, 23, 42, 0.35), transparent 78%);
+      pointer-events: none;
+    }
+    .login-card {
+      position: relative;
+      width: 100%;
+      max-width: 430px;
+      background: radial-gradient(circle at top, rgba(17, 24, 39, 0.98), rgba(15, 23, 42, 0.96));
+      border-radius: 22px;
+      padding: 24px 24px 22px;
+      box-shadow:
+        0 26px 70px rgba(15, 23, 42, 0.98),
+        0 0 60px rgba(59, 130, 246, 0.85),
+        0 0 0 1px rgba(148, 163, 184, 0.7);
+      color: #e5e7eb;
+      backdrop-filter: blur(30px);
+      border: 1px solid rgba(148, 163, 184, 0.9);
+      text-align: center;
+    }
+    .login-logo img {
+      max-width: 210px;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+      filter: drop-shadow(0 0 14px rgba(59, 130, 246, 0.9));
+    }
+    .login-title {
+      margin: 4px 0 6px;
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: #f9fafb;
+      text-shadow:
+        0 0 16px rgba(96, 165, 250, 0.9),
+        0 0 32px rgba(59, 130, 246, 0.9);
+    }
+    .login-sub {
+      font-size: 13px;
+      color: #e5e7eb;
+      margin: 0 0 16px;
+      text-shadow: 0 0 10px rgba(15, 23, 42, 0.9);
+    }
+    .login-label {
+      display: block;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+      margin-top: 8px;
+      color: #e5e7eb;
+      text-align: left;
+    }
+    .login-input {
+      width: 100%;
+      padding: 9px 10px;
+      margin-bottom: 4px;
+      border-radius: 11px;
+      border: 1px solid rgba(148, 163, 184, 0.95);
+      background: radial-gradient(circle at top, rgba(15, 23, 42, 0.95), #020617);
+      color: #f9fafb;
+      font-size: 13px;
+      outline: none;
+      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.7);
+    }
+    .login-input::placeholder { color: #d1d5db; }
+    .login-input:focus {
+      border-color: #38bdf8;
+      box-shadow:
+        0 0 0 1px rgba(56, 189, 248, 0.9),
+        0 0 0 7px rgba(56, 189, 248, 0.22);
+    }
+    .login-error {
+      min-height: 16px;
+      font-size: 12px;
+      color: #fecaca;
+      margin: 2px 0 8px;
+      text-align: left;
+    }
+    .login-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .login-footer button {
+      padding-inline: 22px;
+      border-radius: 999px;
+      background: radial-gradient(circle at top left, #38bdf8, #6366f1);
+      box-shadow:
+        0 18px 32px rgba(15, 23, 42, 0.95),
+        0 0 45px rgba(37, 99, 235, 0.95);
+      font-size: 13px;
+      color: #0b1220;
+    }
+    .login-footer button:hover {
+      background: radial-gradient(circle at top, #7dd3fc, #4f46e5);
+    }
+    .login-meta {
+      font-size: 11px;
+      color: #e5e7eb;
+      text-align: right;
+      flex: 1;
+      text-shadow: 0 0 10px rgba(15, 23, 42, 1);
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .cart-panel {
+        margin-top: 10px;
+      }
+    }
+    @media (max-width: 720px) {
+      .card {
+        padding: 18px 16px 20px;
+      }
+      .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .search-row {
+        flex-direction: column;
+      }
+      .button-column {
+        flex-direction: row;
+        justify-content: flex-start;
+      }
+      .login-footer {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+      }
+      .login-footer button {
+        width: 100%;
+        justify-content: center;
+      }
+      .login-meta {
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- LOGIN OVERLAY -->
+  <div class="login-overlay" id="loginOverlay">
+    <div class="login-card">
+      <div class="login-logo">
+        <img src="incora-logo.png" alt="Incora" />
+      </div>
+      <h2 class="login-title">Incora Parts Portal</h2>
+      <p class="login-sub">
+        Authorised users only. Enter your assigned username and password to continue.
+      </p>
+
+      <label class="login-label" for="usernameInput">Username</label>
+      <input type="text" id="usernameInput" class="login-input" placeholder="e.g. user001" />
+
+      <label class="login-label" for="passwordInput">Password</label>
+      <input type="password" id="passwordInput" class="login-input" placeholder="Enter password" />
+
+      <div class="login-error" id="loginError"></div>
+      <div class="login-footer">
+        <button id="loginBtn">Sign in</button>
+        <div class="login-meta">
+          Each customer has a unique account.<br/>
+          Contact your Incora representative if you need access.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN APP -->
+  <div class="app-wrapper" id="appRoot" style="display:none;">
+    <div class="card">
+      <div class="card-header">
+        <img src="incora-logo.png" alt="Incora" class="brand-logo-img" />
+        <div class="user-badge">
+          <span id="userLabel">Logged in as: -</span>
+          <button class="secondary" id="logoutBtn">Logout</button>
+        </div>
+      </div>
+
+      <h1>Parts Availability &amp; Pricing Search</h1>
+      <div class="subtitle">
+        Paste or type one or more part numbers to check current manufacturer, sell price and on-hand quantity.
+      </div>
+
+      <div class="search-section">
+        <label for="partInput">Part numbers</label>
+        <div class="search-row">
+          <textarea id="partInput" placeholder="e.g. AS20624, AS52761&#10;You can paste from Excel or enter one per line."></textarea>
+          <div class="button-column">
+            <button id="searchBtn">Search</button>
+            <button type="button" class="secondary" id="clearBtn">Clear</button>
+          </div>
+        </div>
+        <div class="hint">
+          • Separate part numbers by new lines, commas, or spaces. <br/>
+          • Multi-line input is supported — <strong>Enter only adds a new line</strong>.
+        </div>
+        <div class="status-bar">
+          <span>
+            <span id="statusDot" class="status-dot"></span>
+            <span id="statusText">Loading data...</span>
+          </span>
+          <span id="summaryText"></span>
+        </div>
+      </div>
+
+      <div class="layout">
+        <div class="results-panel">
+          <table id="resultsTable" style="display:none;">
+            <thead>
+              <tr>
+                <th>Part Number</th>
+                <th>Manufacturer</th>
+                <th>Quantity Available</th>
+                <th>Sell Price</th>
+                <th>Certificate Available</th>
+                <th>Add</th>
+              </tr>
+            </thead>
+            <tbody id="resultsBody"></tbody>
+          </table>
+          <div class="no-results" id="noResults">
+            No results yet. Enter part numbers above and click <strong>Search</strong>.
+          </div>
+        </div>
+
+        <div class="cart-panel">
+          <div class="cart-header">
+            <span class="cart-title">Selected for order</span>
+            <button type="button" class="secondary small" id="clearCartBtn">Clear</button>
+          </div>
+          <div class="cart-empty" id="cartEmpty">
+            No parts selected yet. Use <strong>Add</strong> from the results table.
+          </div>
+          <div class="cart-list" id="cartList"></div>
+
+          <div class="cart-summary" id="cartSummary">Total order value: $0.00</div>
+
+          <div class="cart-footer-buttons">
+            <button type="button" class="small" id="copyOrderBtn">Copy order text</button>
+            <button type="button" class="small" id="generatePoBtn">Generate PO (PDF)</button>
+          </div>
+          <textarea id="orderText" class="order-textarea" placeholder="Order text will be generated from the selected parts."></textarea>
+        </div>
+      </div>
+
+      <div class="footer-note">
+        <div>
+          <strong>Notes</strong><br/>
+          Data shown is based on internal inventory and subject to confirmation at time of order.
+        </div>
+        <div class="footer-right">
+          &copy; Incora. All rights reserved.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+    const AUTH_ENDPOINT = "https://script.google.com/macros/s/AKfycbyVfU0GpnO-ZOOvX4T0rvE2meP8q1PpuJSktGNvnI53J9hYNyfRplraf4cNd3MRXHxJ/exec";
+    let currentUser = null;
+
+    const loginOverlay = document.getElementById("loginOverlay");
+    const appRoot = document.getElementById("appRoot");
+    const loginBtn = document.getElementById("loginBtn");
+    const usernameInput = document.getElementById("usernameInput");
+    const passwordInput = document.getElementById("passwordInput");
+    const loginError = document.getElementById("loginError");
+    const userLabel = document.getElementById("userLabel");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    function showApp(username) {
+      currentUser = username;
+      userLabel.textContent = "Logged in as: " + username;
+      loginOverlay.style.display = "none";
+      appRoot.style.display = "block";
+    }
+
+    function showLogin() {
+      appRoot.style.display = "none";
+      loginOverlay.style.display = "flex";
+      usernameInput.value = "";
+      passwordInput.value = "";
+      loginError.textContent = "";
+    }
+
+    async function attemptLogin() {
+      const u = usernameInput.value.trim();
+      const p = passwordInput.value.trim();
+
+      if (!u || !p) {
+        loginError.textContent = "Username and password are required.";
+        return;
+      }
+
+      loginError.textContent = "Checking...";
+
+      try {
+        const body = new URLSearchParams({ username: u, password: p }).toString();
+
+        const response = await fetch(AUTH_ENDPOINT, {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          try { localStorage.setItem("incora_current_user", u); } catch (e) {}
+          showApp(u);
+        } else {
+          loginError.textContent = "Invalid username or password.";
+        }
+      } catch (err) {
+        loginError.textContent = "Login service unavailable.";
+      }
+    }
+
+    loginBtn.addEventListener("click", attemptLogin);
+    passwordInput.addEventListener("keypress", function (e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        attemptLogin();
+      }
+    });
+
+    logoutBtn.addEventListener("click", function () {
+      try { localStorage.removeItem("incora_current_user"); } catch (e) { }
+      showLogin();
+    });
+
+    try {
+      const storedUser = localStorage.getItem("incora_current_user");
+      if (storedUser) {
+        showApp(storedUser);
+      }
+    } catch (e) { }
+
+    // PARTS SEARCH + CART
+    const partInput = document.getElementById("partInput");
+    const searchBtn = document.getElementById("searchBtn");
+    const clearBtn = document.getElementById("clearBtn");
+    const resultsTable = document.getElementById("resultsTable");
+    const resultsBody = document.getElementById("resultsBody");
+    const noResults = document.getElementById("noResults");
+    const statusDot = document.getElementById("statusDot");
+    const statusText = document.getElementById("statusText");
+    const summaryText = document.getElementById("summaryText");
+
+    const cartEmpty = document.getElementById("cartEmpty");
+    const cartList = document.getElementById("cartList");
+    const clearCartBtn = document.getElementById("clearCartBtn");
+    const copyOrderBtn = document.getElementById("copyOrderBtn");
+    const generatePoBtn = document.getElementById("generatePoBtn");
+    const orderText = document.getElementById("orderText");
+    const cartSummary = document.getElementById("cartSummary");
+
+    let partsData = [];
+    let cartItems = [];
+
+    function parseCSV(text) {
+      const lines = text.trim().split(/\r?\n/);
+      const header = lines[0].split(",").map(h => h.trim());
+      const rows = [];
+
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (!line) continue;
+        const cols = line.split(",");
+        const row = {};
+        header.forEach((h, idx) => {
+          row[h] = cols[idx] !== undefined ? cols[idx] : "";
+        });
+        rows.push(row);
+      }
+      return rows;
+    }
+
+    function normalisePartList(raw) {
+      const tokens = raw
+        .split(/\r?\n|,|\s/)
+        .map(t => t.trim())
+        .filter(Boolean);
+      return [...new Set(tokens)];
+    }
+
+    function parsePrice(value) {
+      if (value === undefined || value === null) return NaN;
+      const cleaned = String(value).replace(/[^0-9.\-]/g, "");
+      if (!cleaned) return NaN;
+      const num = parseFloat(cleaned);
+      return isNaN(num) ? NaN : num;
+    }
+
+    function searchParts() {
+      if (!partsData || partsData.length === 0) {
+        noResults.style.display = "block";
+        noResults.textContent = "Data file not loaded yet. Please try again in a moment.";
+        return;
+      }
+
+      const raw = partInput.value;
+      const requested = normalisePartList(raw);
+
+      if (requested.length === 0) {
+        noResults.style.display = "block";
+        noResults.textContent = "Please enter at least one part number.";
+        resultsTable.style.display = "none";
+        resultsBody.innerHTML = "";
+        summaryText.textContent = "";
+        return;
+      }
+
+      const index = {};
+      partsData.forEach(row => {
+        const key = (row.part_number || row["Part Number"] || "").trim().toUpperCase();
+        if (key) index[key] = row;
+      });
+
+      resultsBody.innerHTML = "";
+      let foundCount = 0;
+
+      requested.forEach(code => {
+        const key = code.toUpperCase();
+        const row = index[key];
+        const tr = document.createElement("tr");
+
+        const tdPart = document.createElement("td");
+        const tdMfg = document.createElement("td");
+        const tdQty = document.createElement("td");
+        const tdPrice = document.createElement("td");
+        const tdCert = document.createElement("td");
+        const tdAdd = document.createElement("td");
+
+        tdPart.textContent = key;
+
+        if (row) {
+          foundCount++;
+          const mfg = row.manufacturer || row["Manufacturer"] || "";
+          const qty = row.quantity_available || row["Quantity Available"] || row.qty || "";
+          const price = row.sell_price || row["Sell Price"] || "";
+          const cert = row["cert available"] || row.cert_available || row["Certificate Available"] || "";
+
+          tdMfg.textContent = mfg;
+          tdQty.textContent = qty;
+          tdPrice.textContent = price;
+
+          const badge = document.createElement("span");
+          badge.className = "badge " + (cert && cert.toLowerCase() !== "none" ? "badge-ok" : "badge-none");
+          badge.textContent = cert || "None";
+          tdCert.appendChild(badge);
+
+          const addBtn = document.createElement("button");
+          addBtn.textContent = "Add";
+          addBtn.className = "small secondary";
+          addBtn.addEventListener("click", () => addToCart({
+            part_number: key,
+            manufacturer: mfg,
+            quantity_available: qty,
+            sell_price: price,
+            cert: cert
+          }));
+          tdAdd.appendChild(addBtn);
+        } else {
+          tdMfg.textContent = "";
+          tdQty.innerHTML = '<span class="badge badge-none">Not found</span>';
+          tdPrice.textContent = "-";
+          tdCert.textContent = "-";
+          tdAdd.textContent = "";
+        }
+
+        tr.appendChild(tdPart);
+        tr.appendChild(tdMfg);
+        tr.appendChild(tdQty);
+        tr.appendChild(tdPrice);
+        tr.appendChild(tdCert);
+        tr.appendChild(tdAdd);
+        resultsBody.appendChild(tr);
+      });
+
+      if (foundCount === 0) {
+        resultsTable.style.display = "none";
+        noResults.style.display = "block";
+        noResults.textContent = "No matching parts found in current dataset.";
+        summaryText.textContent = "";
+      } else {
+        resultsTable.style.display = "";
+        noResults.style.display = "none";
+        summaryText.textContent = foundCount + " of " + requested.length + " part number(s) found in current dataset.";
+      }
+    }
+
+    function clearSearch() {
+      partInput.value = "";
+      resultsBody.innerHTML = "";
+      resultsTable.style.display = "none";
+      noResults.style.display = "block";
+      noResults.textContent = "No results yet. Enter part numbers above and click Search.";
+      summaryText.textContent = "";
+    }
+
+    function addToCart(item) {
+      if (!item || !item.part_number) return;
+      const exists = cartItems.some(ci => ci.part_number === item.part_number);
+      if (!exists) {
+        cartItems.push(item);
+        renderCart();
+      }
+    }
+
+    function removeFromCart(part_number) {
+      cartItems = cartItems.filter(ci => ci.part_number !== part_number);
+      renderCart();
+    }
+
+    function clearCart() {
+      cartItems = [];
+      renderCart();
+    }
+
+    function renderCart() {
+      cartList.innerHTML = "";
+      let grandTotal = 0;
+      let hasPriceLine = false;
+
+      if (!cartItems.length) {
+        cartEmpty.style.display = "block";
+        orderText.value = "";
+        if (cartSummary) {
+          cartSummary.textContent = "Total order value: $0.00";
+        }
+        return;
+      }
+      cartEmpty.style.display = "none";
+
+      const lines = [];
+
+      cartItems.forEach(item => {
+        if (!item.quantityOrdered || item.quantityOrdered < 1) {
+          item.quantityOrdered = 1;
+        }
+        const qtyOrdered = item.quantityOrdered;
+        const unitPrice = parsePrice(item.sell_price);
+        const hasPrice = !isNaN(unitPrice);
+        const qtyAvail = parseInt(item.quantity_available, 10);
+        const maxLineTotal = (hasPrice && !isNaN(qtyAvail)) ? unitPrice * qtyAvail : NaN;
+        const lineTotal = hasPrice ? unitPrice * qtyOrdered : NaN;
+
+        if (hasPrice) {
+          hasPriceLine = true;
+          grandTotal += lineTotal;
+        }
+
+        const div = document.createElement("div");
+        div.className = "cart-item";
+
+        const topRow = document.createElement("div");
+        topRow.className = "cart-top-row";
+
+        const partSpan = document.createElement("span");
+        partSpan.className = "cart-part";
+        partSpan.textContent = item.part_number;
+
+        const removeBtn = document.createElement("button");
+        removeBtn.textContent = "Remove";
+        removeBtn.className = "secondary small cart-remove";
+        removeBtn.addEventListener("click", () => removeFromCart(item.part_number));
+
+        topRow.appendChild(partSpan);
+        topRow.appendChild(removeBtn);
+        div.appendChild(topRow);
+
+        const meta = document.createElement("div");
+        meta.className = "cart-meta";
+        meta.textContent = [
+          item.manufacturer ? "MFG: " + item.manufacturer : "",
+          item.quantity_available ? "QTY AVAIL: " + item.quantity_available : "",
+          item.sell_price ? "UNIT PRICE: " + item.sell_price : "",
+          item.cert ? "CERT: " + item.cert : ""
+        ].filter(Boolean).join(" | ");
+        div.appendChild(meta);
+
+        const qtyRow = document.createElement("div");
+        qtyRow.className = "qty-row";
+
+        const qtyLabel = document.createElement("span");
+        qtyLabel.textContent = "Order qty:";
+        qtyRow.appendChild(qtyLabel);
+
+        const qtyInput = document.createElement("input");
+        qtyInput.type = "number";
+        qtyInput.min = "1";
+        qtyInput.value = qtyOrdered;
+        qtyInput.className = "qty-input";
+        qtyInput.addEventListener("change", () => {
+          const val = parseInt(qtyInput.value, 10);
+          let newQty = (!isNaN(val) && val > 0) ? val : 1;
+          const qtyAvail = parseInt(item.quantity_available, 10);
+          if (!isNaN(qtyAvail) && newQty > qtyAvail) {
+            newQty = qtyAvail;
+          }
+          item.quantityOrdered = newQty;
+          qtyInput.value = newQty;
+          renderCart();
+        });
+        qtyRow.appendChild(qtyInput);
+
+        const lineInfo = document.createElement("span");
+        lineInfo.className = "line-total";
+        if (hasPrice) {
+          lineInfo.textContent = "Line total: $" + lineTotal.toFixed(2);
+        } else {
+          lineInfo.textContent = "Line total: N/A";
+        }
+        qtyRow.appendChild(lineInfo);
+
+        if (hasPrice && lineTotal < 300) {
+          const warn = document.createElement("span");
+          warn.className = "line-warning";
+          if (!isNaN(maxLineTotal) && maxLineTotal < 300) {
+            warn.textContent = "Min order value is $300 per line; full available stock is still below MOV.";
+          } else {
+            warn.textContent = "Min order value is $300 per line.";
+          }
+          qtyRow.appendChild(warn);
+        }
+
+        div.appendChild(qtyRow);
+        cartList.appendChild(div);
+
+        const lineParts = [];
+        lineParts.push(item.part_number);
+        lineParts.push("ORDER QTY: " + qtyOrdered);
+        if (hasPrice) {
+          lineParts.push("UNIT: " + item.sell_price);
+          lineParts.push("LINE TOTAL: $" + lineTotal.toFixed(2));
+        }
+        if (item.manufacturer) lineParts.push("MFG: " + item.manufacturer);
+        if (item.cert) lineParts.push("CERT: " + item.cert);
+        lines.push(" - " + lineParts.join(" | "));
+      });
+
+      // Determine display total and MOV messaging
+      let displayTotal = grandTotal;
+      const footerNotes = [];
+
+      if (cartItems.length === 1 && hasPriceLine) {
+        const item = cartItems[0];
+        const unitPrice = parsePrice(item.sell_price);
+        const qtyAvail = parseInt(item.quantity_available, 10);
+        const maxLineTotal = (!isNaN(unitPrice) && !isNaN(qtyAvail)) ? unitPrice * qtyAvail : NaN;
+        const qtyOrdered = item.quantityOrdered || 1;
+        const lineTotal = !isNaN(unitPrice) ? unitPrice * qtyOrdered : NaN;
+
+        if (!isNaN(maxLineTotal) && maxLineTotal < 300 && !isNaN(lineTotal) && lineTotal < 300) {
+          // Single line, stock-limited and below MOV: force MOV on total
+          displayTotal = 300;
+          footerNotes.push("Note: Available stock for this line cannot meet the $300 minimum order value (MOV). Total order value has been adjusted to $300 due to MOV. Please reach out to your sales representative or you can proceed to checkout.");
+        }
+      }
+
+      if (hasPriceLine) {
+        if (displayTotal >= 300) {
+          footerNotes.push("Minimum order value of $300 is met based on total order value.");
+        } else {
+          footerNotes.push("Warning: total order value is below the $300 minimum order value.");
+        }
+      }
+
+      const header = "Please raise order for the following parts:\n\n";
+      let body = lines.join("\n");
+
+      if (hasPriceLine) {
+        body += "\n\nTotal order value: $" + displayTotal.toFixed(2);
+      }
+      if (footerNotes.length) {
+        body += "\n" + footerNotes.map(t => "- " + t).join("\n");
+      }
+      orderText.value = header + body;
+
+      if (cartSummary) {
+        if (hasPriceLine) {
+          cartSummary.textContent = "Total order value: $" + displayTotal.toFixed(2);
+        } else {
+          cartSummary.textContent = "Total order value: N/A";
+        }
+      }
+    }
+
+    function generatePurchaseOrder() {
+      if (!cartItems.length) {
+        alert("No parts in cart. Add parts before generating a PO.");
+        return;
+      }
+      const jspdf = window.jspdf;
+      if (!jspdf || !jspdf.jsPDF) {
+        alert("PDF library not loaded. Please try again later.");
+        return;
+      }
+      const { jsPDF } = jspdf;
+      const doc = new jsPDF();
+
+      // Build PO number: userddmmyyyyNNNN (NNNN is daily running number, per browser)
+      const today = new Date();
+      const dd = String(today.getDate()).padStart(2, "0");
+      const mm = String(today.getMonth() + 1).padStart(2, "0");
+      const yyyy = today.getFullYear();
+      const dateToken = dd + mm + String(yyyy);
+
+      let userToken = (currentUser || "user");
+      userToken = userToken.replace(/[^A-Za-z0-9]/g, "").toLowerCase();
+      if (!userToken) userToken = "user";
+
+      const seqKey = "poSeq_" + dateToken;
+      let seq = parseInt(localStorage.getItem(seqKey), 10);
+      if (isNaN(seq) || seq < 0) seq = 0;
+      seq += 1;
+      localStorage.setItem(seqKey, String(seq));
+      const seqStr = String(seq).padStart(4, "0");
+
+      const poNumber = userToken + dateToken + seqStr;
+
+      let y = 10;
+
+      doc.setFontSize(16);
+      doc.text("Purchase Order", 105, y, { align: "center" });
+      y += 10;
+
+      doc.setFontSize(10);
+      const dateStr = today.toLocaleDateString();
+      doc.text("PO No: " + poNumber, 14, y);
+      y += 5;
+      doc.text("Date: " + dateStr, 14, y);
+      y += 6;
+
+      doc.text("Purchaser: Vivian", 14, y);
+      y += 5;
+      doc.text("Supplier: Incora Asia Pte Ltd", 14, y);
+      y += 5;
+      doc.text("Address: 3 Changi North Street 2", 14, y);
+      y += 8;
+
+      doc.setFontSize(9);
+      doc.text("Line", 14, y);
+      doc.text("Part Number", 24, y);
+      doc.text("Qty", 70, y);
+      doc.text("Unit Price", 88, y);
+      doc.text("Line Total", 118, y);
+      doc.text("MFG", 150, y);
+      y += 4;
+
+      let lineIndex = 1;
+      let poTotal = 0;
+
+      cartItems.forEach(item => {
+        const unitPrice = parsePrice(item.sell_price);
+        const hasPrice = !isNaN(unitPrice);
+        const qtyOrdered = item.quantityOrdered || 1;
+        const lineTotal = hasPrice ? unitPrice * qtyOrdered : NaN;
+        if (hasPrice) {
+          poTotal += lineTotal;
+        }
+
+        if (y > 270) {
+          doc.addPage();
+          y = 10;
+        }
+
+        doc.text(String(lineIndex), 14, y);
+        doc.text(String(item.part_number || ""), 24, y);
+        doc.text(String(qtyOrdered), 70, y);
+        doc.text(hasPrice ? "$" + unitPrice.toFixed(2) : "N/A", 88, y);
+        doc.text(hasPrice ? "$" + lineTotal.toFixed(2) : "N/A", 118, y);
+        doc.text(String(item.manufacturer || ""), 150, y);
+        y += 4;
+        lineIndex++;
+      });
+
+      if (y > 260) {
+        doc.addPage();
+        y = 10;
+      }
+      y += 4;
+      doc.text("Total Order Value: $" + poTotal.toFixed(2), 14, y);
+      y += 6;
+
+      doc.setFontSize(8);
+      const terms = [
+        "Incora standard terms and conditions apply.",
+        "This is an ex-works condition.",
+        "All parts are non-cancellable and non-returnable.",
+        "Please confirm with your Incora representative if they have received this purchase order."
+      ];
+      terms.forEach(t => {
+        if (y > 280) {
+          doc.addPage();
+          y = 10;
+        }
+        doc.text(t, 14, y);
+        y += 4;
+      });
+
+      doc.save("Purchase_Order_" + poNumber + ".pdf");
+
+      const subject = encodeURIComponent("New Purchase Order " + poNumber);
+      const body = encodeURIComponent(
+        "Dear Incora,\n\nPlease find attached the purchase order PDF (" +
+          poNumber +
+          ") generated from the customer portal.\n\nBest regards,\nVivian"
+      );
+      window.location.href = "mailto:wlee@incora.com?subject=" + subject + "&body=" + body;
+    }
+
+    async function loadData() {
+    async function loadData() {
+      try {
+        const response = await fetch("parts_data.csv?_=" + Date.now());
+        if (!response.ok) {
+          statusDot.className = "status-dot error";
+          statusText.textContent = "Error loading data file (parts_data.csv).";
+          return;
+        }
+        const csvText = await response.text();
+        partsData = parseCSV(csvText);
+        statusDot.className = "status-dot ok";
+        statusText.textContent = "Data loaded.";
+        summaryText.textContent = partsData.length + " part numbers available.";
+      } catch (err) {
+        statusDot.className = "status-dot error";
+        statusText.textContent = "Error loading data: " + err;
+      }
+    }
+
+    searchBtn.addEventListener("click", searchParts);
+    clearBtn.addEventListener("click", clearSearch);
+    clearCartBtn.addEventListener("click", clearCart);
+    generatePoBtn.addEventListener("click", generatePurchaseOrder);
+
+    copyOrderBtn.addEventListener("click", function () {
+      if (!orderText.value.trim()) {
+        orderText.value = "No parts selected in cart. Add parts first.";
+        return;
+      }
+      orderText.focus();
+      orderText.select();
+      try {
+        document.execCommand("copy");
+      } catch (e) {}
+    });
+
+    loadData();
+  </script>
+</body>
+</html>
