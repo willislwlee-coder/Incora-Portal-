@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Incora - Internal Parts Portal</title>
+  <style>
+    :root {
+      --bg-slate-900: #0f172a;
+      --bg-slate-800: #1e293b;
+      --border-slate-700: #334155;
+      --text-gray-300: #d1d5db;
+      --text-gray-400: #9ca3af;
+      --accent-blue: #3b82f6;
+      --accent-blue-hover: #2563eb;
+      --success-green: #10b981;
+      --error-red: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: #090d16;
+      color: #f3f4f6;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Sidebar Styling */
+    .sidebar {
+      width: 260px;
+      background-color: var(--bg-slate-900);
+      border-right: 1px solid var(--border-slate-700);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 40px;
+    }
+
+    .brand-logo {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, var(--accent-blue), #60a5fa);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: white;
+      font-size: 16px;
+    }
+
+    .brand-name {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: #ffffff;
+    }
+
+    .menu-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .menu-item a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      color: var(--text-gray-400);
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .menu-item.active a, .menu-item a:hover {
+      background-color: var(--bg-slate-800);
+      color: #ffffff;
+    }
+
+    .sidebar-footer {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      color: var(--text-gray-400);
+      border-top: 1px solid rgba(51, 65, 85, 0.5);
+      padding-top: 16px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--text-gray-400);
+    }
+
+    .status-dot.ok {
+      background-color: var(--success-green);
+      box-shadow: 0 0 8px var(--success-green);
+    }
+
+    .status-dot.error {
+      background-color: var(--error-red);
+      box-shadow: 0 0 8px var(--error-red);
+    }
+
+    /* Main Content Styling */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background-color: #0b111e;
+      overflow: hidden;
+    }
+
+    .top-bar {
+      height: 70px;
+      border-bottom: 1px solid var(--border-slate-700);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      background-color: var(--bg-slate-900);
+    }
+
+    .page-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    .user-profile {
+      font-size: 14px;
+      color: var(--text-gray-300);
+    }
+
+    .workspace {
+      flex: 1;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      overflow-y: auto;
+    }
+
+    /* Dashboard Panels Layout */
+    .search-panel {
+      background-color: var(--bg-slate-900);
+      border: 1px solid var(--border-slate-700);
+      border-radius: 12px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .panel-header {
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-gray-400);
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 100px;
+      background-color: var(--bg-slate-800);
+      border: 1px solid var(--border-slate-700);
+      border-radius: 8px;
+      padding: 12px;
+      color: #ffffff;
+      font-family: monospace;
+      font-size: 14px;
+      resize: none;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    textarea:focus {
+      border-color: var(--accent-blue);
+    }
+
+    .button-group {
+      display: flex;
+      gap: 12px;
+    }
+
+    button {
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: background-color 0.2s;
+    }
+
+    .btn-primary {
+      background-color: var(--accent-blue);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--accent-blue-hover);
+    }
+
+    .btn-secondary {
+      background-color: transparent;
+      border: 1px solid var(--border-slate-700);
+      color: var(--text-gray-300);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--bg-slate-800);
+    }
+
+    .results-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      color: var(--text-gray-400);
+    }
+
+    .layout {
+      display: flex;
+      gap: 24px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .results-panel {
+      flex: 1;
+      background-color: var(--bg-slate-900);
+      border: 1px solid var(--border-slate-700);
+      border-radius: 12px;
+      padding: 24px;
+      overflow-y: auto;
+      min-width: 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 6px;
+      font-size: 13px;
+      color: #e5e7eb;
+    }
+
+    th, td {
+      padding: 7px 8px;
+      text-align: left;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.9);
+    }
+
+    th {
+      background: radial-gradient(circle at top, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.98));
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #d1d5db;
+    }
+
+    tr:nth-child(even) td {
+      background: rgba(15, 23, 42, 0.92);
+    }
+
+    tr:nth-child(odd) td {
+      background: rgba(30, 41, 59, 0.4);
+    }
+
+    tr:hover td {
+      background: rgba(51, 65, 85, 0.3) !important;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .badge-ok {
+      background-color: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .badge-none {
+      background-color: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .no-results {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-gray-400);
+      font-size: 14px;
+    }
+
+    .footer-note {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-gray-400);
+      border-top: 1px solid var(--border-slate-700);
+      padding-top: 16px;
+      margin-top: auto;
+    }
+
+    .footer-right {
+      text-align: right;
+    }
+
+    /* Target specific column widths for a balanced look */
+    th:nth-child(1), td:nth-child(1) { width: 25%; font-family: monospace; font-size: 14px; color: #ffffff; } /* Part Number */
+    th:nth-child(2), td:nth-child(2) { width: 15%; } /* Manufacturer */
+    th:nth-child(3), td:nth-child(3) { width: 15%; text-align: right; } /* Qty Available */
+    th:nth-child(4), td:nth-child(4) { width: 15%; text-align: right; } /* Sell Price */
+    th:nth-child(5), td:nth-child(5) { width: 15%; text-align: center; } /* Cert */
+    th:nth-child(6), td:nth-child(6) { width: 15%; text-align: center; } /* Lead Time */
+
+    /* Ensure text alignment matching for numeric tables */
+    td:nth-child(3), td:nth-child(4) { text-align: right; }
+    td:nth-child(5), td:nth-child(6) { text-align: center; }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <div>
+      <div class="brand">
+        <div class="brand-logo">I</div>
+        <div class="brand-name">INCORA</div>
+      </div>
+      <ul class="menu-list">
+        <li class="menu-item active">
+          <a href="#">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            Part Search
+          </a>
+        </li>
+      </ul>
+    </div>
+    <div class="sidebar-footer">
+      <div class="status-dot" id="statusDot"></div>
+      <span id="statusText">Connecting...</span>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <div class="top-bar">
+      <div class="page-title">Internal Query System</div>
+      <div class="user-profile">Supply Chain Module</div>
+    </div>
+
+    <div class="workspace">
+      <div class="search-panel">
+        <div class="panel-header">Bulk Inventory & Pricing Lookup</div>
+        <div class="input-group">
+          <textarea id="partInput" placeholder="Enter part numbers here... (Supports space, comma, or newline separators)"></textarea>
+        </div>
+        <div class="results-meta">
+          <div class="button-group">
+            <button class="btn-primary" id="searchBtn">Search Inventory</button>
+            <button class="btn-secondary" id="clearBtn">Clear</button>
+          </div>
+          <span id="summaryText"></span>
+        </div>
+      </div>
+
+      <div class="layout">
+        <div class="results-panel">
+          <table id="resultsTable" style="display:none;">
+            <thead>
+              <tr>
+                <th>Part Number</th>
+                <th>Manufacturer</th>
+                <th>Quantity Available</th>
+                <th>Sell Price</th>
+                <th>Certificate Available</th>
+                <th>Lead Time</th>
+              </tr>
+            </thead>
+            <tbody id="resultsBody"></tbody>
+          </table>
+          <div class="no-results" id="noResults">
+            No results yet. Enter part numbers above and click <strong>Search</strong>.
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-note">
+        <div>
+          <strong>Notes</strong><br/>
+          Data shown is based on internal inventory and subject to confirmation at time of order.
+        </div>
+        <div class="footer-right">
+          &copy; Incora. All rights reserved.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    const partInput = document.getElementById("partInput");
+    const searchBtn = document.getElementById("searchBtn");
+    const clearBtn = document.getElementById("clearBtn");
+    const resultsTable = document.getElementById("resultsTable");
+    const resultsBody = document.getElementById("resultsBody");
+    const noResults = document.getElementById("noResults");
+    const summaryText = document.getElementById("summaryText");
+    const statusDot = document.getElementById("statusDot");
+    const statusText = document.getElementById("statusText");
+
+    let partsData = [];
+
+    function splitCSVLine(line) {
+      const result = [];
+      let current = "";
+      let inQuotes = false;
+
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        const next = line[i + 1];
+
+        if (char === '"') {
+          if (inQuotes && next === '"') {
+            current += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (char === "," && !inQuotes) {
+          result.push(current);
+          current = "";
+        } else {
+          current += char;
+        }
+      }
+
+      result.push(current);
+      return result.map(value => value.trim());
+    }
+
+    function parseCSV(text) {
+      const lines = text.trim().split(/\r?\n/);
+      if (!lines.length) return [];
+
+      const header = splitCSVLine(lines[0]);
+      const rows = [];
+
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (!line) continue;
+
+        const cols = splitCSVLine(line);
+        const row = {};
+        header.forEach((h, idx) => {
+          row[h] = cols[idx] !== undefined ? cols[idx] : "";
+        });
+        rows.push(row);
+      }
+      return rows;
+    }
+
+    function normalisePartList(raw) {
+      const tokens = raw
+        .split(/\r?\n|,|\s/)
+        .map(t => t.trim())
+        .filter(Boolean);
+      return [...new Set(tokens)];
+    }
+
+    function searchParts() {
+      if (!partsData || partsData.length === 0) {
+        noResults.style.display = "block";
+        noResults.textContent = "Data file not loaded yet. Please try again in a moment.";
+        return;
+      }
+
+      const raw = partInput.value;
+      const requested = normalisePartList(raw);
+
+      if (requested.length === 0) {
+        noResults.style.display = "block";
+        noResults.textContent = "Please enter at least one part number.";
+        resultsTable.style.display = "none";
+        resultsBody.innerHTML = "";
+        summaryText.textContent = "";
+        return;
+      }
+
+      const index = {};
+      partsData.forEach(row => {
+        const key = (row.part_number || row["Part Number"] || "").trim().toUpperCase();
+        if (key) index[key] = row;
+      });
+
+      resultsBody.innerHTML = "";
+      let foundCount = 0;
+
+      requested.forEach(code => {
+        const key = code.toUpperCase();
+        const row = index[key];
+
+        const tr = document.createElement("tr");
+
+        const tdPart = document.createElement("td");
+        const tdMfg = document.createElement("td");
+        const tdQty = document.createElement("td");
+        const tdPrice = document.createElement("td");
+        const tdCert = document.createElement("td");
+        const tdLeadTime = document.createElement("td");
+
+        tdPart.textContent = key;
+
+        if (row) {
+          foundCount++;
+          const mfg = row.manufacturer || row["Manufacturer"] || "";
+          const qty = row.quantity_available || row["Quantity Available"] || row.qty || "";
+          const price = row.sell_price || row["Sell Price"] || "";
+          const cert = row["cert available"] || row.cert_available || row["Certificate Available"] || "";
+          const leadTime = row.leadtime || row["Lead Time"] || "";
+
+          tdMfg.textContent = mfg;
+          tdQty.textContent = qty;
+          tdPrice.textContent = price;
+
+          const badge = document.createElement("span");
+          badge.className = "badge " + (cert && cert.toLowerCase() !== "none" ? "badge-ok" : "badge-none");
+          badge.textContent = cert || "None";
+          tdCert.appendChild(badge);
+
+          tdLeadTime.textContent = leadTime || "-";
+
+        } else {
+          tdMfg.textContent = "";
+          tdQty.innerHTML = '<span class="badge badge-none">Not found</span>';
+          tdPrice.textContent = "-";
+          tdCert.textContent = "-";
+          tdLeadTime.textContent = "-";
+        }
+
+        tr.appendChild(tdPart);
+        tr.appendChild(tdMfg);
+        tr.appendChild(tdQty);
+        tr.appendChild(tdPrice);
+        tr.appendChild(tdCert);
+        tr.appendChild(tdLeadTime);
+        resultsBody.appendChild(tr);
+      });
+
+      if (foundCount === 0) {
+        resultsTable.style.display = "none";
+        noResults.style.display = "block";
+        noResults.textContent = "No matching parts found in current dataset.";
+        summaryText.textContent = "";
+      } else {
+        resultsTable.style.display = "";
+        noResults.style.display = "none";
+        summaryText.textContent = foundCount + " of " + requested.length + " part number(s) found in current dataset.";
+      }
+    }
+
+    function clearSearch() {
+      partInput.value = "";
+      resultsBody.innerHTML = "";
+      resultsTable.style.display = "none";
+      noResults.style.display = "block";
+      noResults.textContent = "No results yet. Enter part numbers above and click Search.";
+      summaryText.textContent = "";
+    }
+
+    async function loadData() {
+      try {
+        const response = await fetch("parts_data.csv?_=" + Date.now());
+        if (!response.ok) {
+          statusDot.className = "status-dot error";
+          statusText.textContent = "Error loading data file (parts_data.csv).";
+          return;
+        }
+        const csvText = await response.text();
+        partsData = parseCSV(csvText);
+        statusDot.className = "status-dot ok";
+        statusText.textContent = "Data loaded.";
+        summaryText.textContent = partsData.length + " part numbers available.";
+      } catch (err) {
+        statusDot.className = "status-dot error";
+        statusText.textContent = "Error loading data: " + err;
+      }
+    }
+
+    searchBtn.addEventListener("click", searchParts);
+    clearBtn.addEventListener("click", clearSearch);
+
+    loadData();
+  </script>
+</body>
+</html>
